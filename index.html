@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>V2Ray Config Fetcher</title>
+    <style>
+        body {
+            font-family: monospace;
+            background-color: #eee;
+            padding: 20px;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        a {
+            display: block;
+            margin: 5px 0;
+        }
+        .last-update {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Download Tornado Configs</h1>
+    <p class="last-update">Last update: <span id="update-time">Loading...</span></p>
+    <p>All files are fetched automatically every hour.</p>
+
+    <div class="result" id="file-list">
+        Loading files...
+    </div>
+
+    <script>
+        // جایی که اپ Hugging Face شما قرار داره
+        const BACKEND_URL = 'https://moriiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii-tornado-plus.hf.space';
+
+        async function loadFiles() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/files`);
+                const data = await res.json();
+
+                document.getElementById("update-time").textContent = data.last_update;
+
+                const listDiv = document.getElementById("file-list");
+                listDiv.innerHTML = '';
+
+                if (data.files.length > 0) {
+                    data.files.forEach(file => {
+                        const a = document.createElement('a');
+                        a.href = `${BACKEND_URL}/download/${file}`;
+                        a.textContent = `Download ${file}`;
+                        a.download = file;
+                        listDiv.appendChild(a);
+                    });
+                } else {
+                    listDiv.innerHTML = '<p>No files available.</p>';
+                }
+            } catch (e) {
+                console.error("Error loading files:", e);
+                document.getElementById("file-list").innerHTML = '<p>Error loading files.</p>';
+            }
+        }
+
+        loadFiles();
+    </script>
+</body>
+</html>
